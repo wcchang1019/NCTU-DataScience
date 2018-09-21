@@ -4,6 +4,7 @@ chardet==3.0.4
 idna==2.7
 numpy==1.15.1
 pandas==0.23.4
+pkg-resources==0.0.0
 python-dateutil==2.7.3
 pytz==2018.5
 requests==2.19.1
