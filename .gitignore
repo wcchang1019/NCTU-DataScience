@@ -1,0 +1,4 @@
+venv/
+*.txt
+!HW1/readme.txt
+.idea/
