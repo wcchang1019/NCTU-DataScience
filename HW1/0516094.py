@@ -20,8 +20,16 @@ def ptt_one_page_articles(href, index):
     boo_like = soup.find_all('div', {'class': 'nrec'})
     all_articles = open('all_articles.txt', 'a+')
     all_popular = open('all_popular.txt', 'a+')
+    ignore_articles = ['https://www.ptt.cc/bbs/Beauty/M.1490936972.A.60D.html',
+                       'https://www.ptt.cc/bbs/Beauty/M.1494776135.A.50A.html',
+                       'https://www.ptt.cc/bbs/Beauty/M.1503194519.A.F4C.html',
+                       'https://www.ptt.cc/bbs/Beauty/M.1504936945.A.313.html',
+                       'https://www.ptt.cc/bbs/Beauty/M.1505973115.A.732.html',
+                       'https://www.ptt.cc/bbs/Beauty/M.1507620395.A.27E.html',
+                       'https://www.ptt.cc/bbs/Beauty/M.1510829546.A.D83.html',
+                       'https://www.ptt.cc/bbs/Beauty/M.1512141143.A.D31.html']
     for count in np.arange(0, len(article)):
-        if len(article[count]) > 1 and '公告' not in article[count].contents[1].contents[0]:
+        if len(article[count]) > 1 and not article[count].contents[1].contents[0].startswith('[公告]'):
             try:
                 boo_like[count] = int(boo_like[count].contents[0].text)
             except:
@@ -32,7 +40,8 @@ def ptt_one_page_articles(href, index):
             condition1 = (index == 1992 and date[count].contents[0].replace('/', '').replace(' ', '') == '101')
             condition2 = (index == 2340 and date[count].contents[0].replace('/', '').replace(' ', '') == '1231')
             condition3 = (index != 1992 and index != 2340)
-            if condition1 or condition2 or condition3:
+            condition4 = 'https://www.ptt.cc' + article[count].find_all('a')[0]['href'] not in ignore_articles
+            if (condition1 or condition2 or condition3) and condition4:
                 all_articles.write(date[count].contents[0].replace('/', '').replace(' ', '')
                                    + ',' + article[count].contents[1].text
                                    + ',' + 'https://www.ptt.cc' + article[count].find_all('a')[0]['href'] + '\n')
@@ -70,7 +79,7 @@ def ptt_article_boo_like(href):
     df = pd.DataFrame(columns=['type', 'name'])
     for index in np.arange(0, len(push)):
         try:
-            df.loc[len(df)] = [push[index].find_all('span', {'class': 'push-tag'})[0].text.replace(' ', ''),
+            df.loc[len(df)] = [push[index].find_all('span', {'class': 'push-tag'})[0].text,
                                push[index].find_all('span', {'class': 'push-userid'})[0].text]
         except:
             pass
@@ -89,13 +98,13 @@ def ptt_time_interval_boo_like(df, start_date, end_date):
     if os.path.exists(file_name):
         os.remove(file_name)
     f = open(file_name, 'a+')
-    f.write('all like: ' + str(total['type'].value_counts()['推']) + '\n')
-    f.write('all boo: ' + str(total['type'].value_counts()['噓']) + '\n')
-    push = total[(total['type'] == '推')]['name'].value_counts()
+    f.write('all like: ' + str(total['type'].value_counts()['推 ']) + '\n')
+    f.write('all boo: ' + str(total['type'].value_counts()['噓 ']) + '\n')
+    push = total[(total['type'] == '推 ')]['name'].value_counts()
     push = push.reset_index(drop=False)
     push.columns = [0, 1]
     push = push.sort_values([1, 0], ascending=[False, True])
-    boo = total[(total['type'] == '噓')]['name'].value_counts()
+    boo = total[(total['type'] == '噓 ')]['name'].value_counts()
     boo = boo.reset_index(drop=False)
     boo.columns = [0, 1]
     boo = boo.sort_values([1, 0], ascending=[False, True])
@@ -148,7 +157,7 @@ def ptt_get_popular_img(df, start_date, end_date):
     if os.path.exists(file_name):
         os.remove(file_name)
     f = open(file_name, 'a+')
-    f.write('number of popular articles:' + str(len(df)) + '\n')
+    f.write('number of popular articles: ' + str(len(df)) + '\n')
     for index in np.arange(0, len(total)):
         f.write(str(total[index]) + '\n')
     f.close()
