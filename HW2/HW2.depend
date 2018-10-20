@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1539785859 source:/home/white/Projects/NCTU-DataScience/HW2/main.cpp
+	<iostream>
+	<cstdio>
+	<sstream>
+	<vector>
+	<algorithm>
+	<iterator>
+	<iomanip>
+	<fstream>
+	<omp.h>
+
